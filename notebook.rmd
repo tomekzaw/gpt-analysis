@@ -37,9 +37,9 @@ Sys.setlocale('LC_TIME','pl_PL.UTF-8')
 ```
 
 ```{r}
-delays_csv <- read.csv('csv/norm.csv')
-delays <- delays_csv %>%
-  transform(delays_csv,
+raw_delays <- read.csv('csv/norm.csv')
+delays <- raw_delays %>%
+  transform(raw_delays,
     delay = delay/60,
     day = as.Date(day),
     theoretical_time = as.difftime(as.character(theoretical_time), "%H:%M:%S", units="hours")
@@ -90,7 +90,7 @@ summary(delays$delay)
 df <- data.frame(delay = delays$delay) %>% filter(delay >= -10 & delay <= 30)
 ggplot(df, aes(x=delay, y=..density..)) +
   geom_histogram(binwidth=1) +
-  labs(title="Histogram opóźnień przyjazdów na przystanek", x="Czas [min]", y=element_blank()) +
+  labs(title="Opóźnienia przyjazdów na przystanek", x="Czas [min]", y=element_blank()) +
   scale_y_continuous(labels=scales::percent, limits=c(0, 0.25))
 ```
 
@@ -98,7 +98,7 @@ ggplot(df, aes(x=delay, y=..density..)) +
 df <- delays %>% distinct(trip, weekday) %>% group_by(weekday) %>% count()
 ggplot(df, aes(x=weekday, y=n)) + 
   geom_bar(stat="identity", width=0.5) +
-  labs(title="Rozkład kursów według dnia tygodnia", x="Dzień tygodnia", y="Liczba kursów") +
+  labs(title="Liczba kursów według dnia tygodnia", x="Dzień tygodnia", y="Liczba kursów") +
   scale_x_continuous(
     breaks=1:7,
     labels=c("poniedziałek", "wtorek", "środa", "czwartek", "piątek", "sobota", "niedziela"))
