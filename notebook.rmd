@@ -29,6 +29,7 @@ GROUP BY trip, stop_id, trip_id, vehicle_id, theoretical_time, route_id, DATE(la
 
 ```{r}
 library(dplyr)
+library(rjson)
 library(ggplot2)
 library(ggthemr)
 ggthemr('flat', layout = 'scientific')
@@ -48,7 +49,6 @@ delays$weekday <- (as.POSIXlt(as.Date(delays$day))$wday - 1) %% 7 + 1
 ```
 
 ```{r}
-library(rjson)
 raw_stops <- fromJSON(file='csv/stops.json')
 stops <- raw_stops[['2019-06-20']][['stops']]
 stops <- lapply(stops, function(x) {
