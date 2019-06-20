@@ -79,7 +79,7 @@ stops_in_trip <- data.frame(do.call("rbind", stops_in_trip))
 stop_delays <- merge(x=delays, y=stops_in_trip, by.x=c("trip_id", "route_id", "stop_id"), by.y=c("tripId", "routeId", "stopId"))
 stop_delays <- merge(stop_delays, stops, by.x="stop_id", by.y="stopId")
 stop_delays$stopSequence = as.numeric(as.character(stop_delays$stopSequence))
-#stop_delays$stopName <- reorder(stop_delays$stopName, stop_delays$stopSequence)
+stop_delays$stopName = factor(stop_delays$stopName, levels=levels(reorder(test$stopName, test$stopSequence)))
 ```
 
 ```{r}
@@ -143,12 +143,12 @@ ggplot(delays %>% filter(weekday %in% c(6,7)), aes(x=theoretical_time)) +
 ```{r}
 ticks <- 0:12*2
 ggplot(delays, aes(x = theoretical_time, y = delay)) +
-  stat_summary_bin(fun.y="mean", geom="bar", binwidth=1) +
+  stat_summary_bin(fun.y="mean", geom="bar", binwidth=0.2) +
   labs(title="Spóźnienie według godziny", x="Godzina", y="Średnie opóźnienie [min]") +
   scale_x_continuous(
     breaks=ticks,
     labels=paste(ticks, "00", sep=":")
-  ) 
+  )
 ```
 
 ```{r}
@@ -176,8 +176,8 @@ ggplot(delays, aes(x=theoretical_time, y=delay)) +
 ```
 
 ```{r}
-avgs <- delays %>%
-	group_by(stop_id) %>%
+avgs <- stop_delays %>%
+	group_by(stopName) %>%
 	summarise(mean = mean(delay), length = length(delay)) %>%
   filter(length > 20) %>%
   arrange(-mean)
@@ -189,17 +189,33 @@ line_df <- stop_delays %>% filter(route_id == 2 & trip_id == 12)
 ggplot(line_df, aes(as.character(stopSequence), delay)) +
   geom_point(alpha = 0.2) +
   labs(title="Rozkład spóźnienia linii tramwajowej nr 2 na kolejnych przystankach", y="Opóźnienie", x = "Przystanek") +
-  scale_x_discrete(limits= line_df %>% distinct(stopSequence) %>% arrange(stopSequence) %>% `$`(stopSequence) %>% as.character, labels=line_df %>% distinct(stopSequence, stopName) %>% arrange(stopSequence) %>% `$`(stopName)) + 
-   theme(axis.text.x = element_text(angle = 90, hjust = 1, margin = margin(0, 0, 0, -1))) +
+  scale_x_discrete(
+    limits = line_df %>% distinct(stopSequence) %>% arrange(stopSequence) %>% `$`(stopSequence) %>% as.character,
+    labels = line_df %>% distinct(stopSequence, stopName) %>% arrange(stopSequence) %>% `$`(stopName)
+  ) + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust=0.5, margin = margin(0, 0, 0, -1))) +
   
   coord_cartesian(ylim = c(-10:30))
 ```
 
 ```{r}
-avgDelay <- line_df %>% group_by(stopSequence, floor(theoretical_time)) %>% mutate(avg_delay = mean(delay)) %>% ungroup() %>% distinct(stopSequence, theoretical_time, avg_delay, stopName) %>% arrange(stopSequence)
-ggplot(avgDelay, aes(stopName, as.integer(theoretical_time))) + coord_flip() + geom_tile(aes(fill = avg_delay), colour = "white") +
-scale_fill_gradient(low = "white", high = "steelblue")
+avgDelay <- line_df %>%
+  group_by(stopSequence, floor(as.integer(theoretical_time))) %>%
+  mutate(avg_delay = mean(delay)) %>% ungroup() %>%
+  distinct(stopSequence, theoretical_time, avg_delay, stopName) %>%
+  arrange(stopSequence)
+ggplot(avgDelay, aes(as.integer(theoretical_time), stopName)) +
+  scale_x_continuous(
+    labels = paste(as.character(unique(as.integer(avgDelay$theoretical_time))), "00", sep=":"),
+    breaks = unique(as.integer(avgDelay$theoretical_time)),
+  ) +
+  labs(title="Średnie opóźnienie linii 2 na przestrzeni dnia", x="Godzina", y="Przystanek", fill="Opóźnienie") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust=0.5)) +
+  geom_tile(aes(fill = avg_delay), colour = "white") +
+  scale_fill_gradient(low = "white", high = "steelblue")
 ```
+
+Henio o 12 pije kawę.
 
 ```{r}
 ggplot(delays %>% filter(delay >= -5 & delay <= 10 & route_id == 2), aes(x=stop_id, y=delay) ) +
