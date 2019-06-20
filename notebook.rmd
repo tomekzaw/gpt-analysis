@@ -185,7 +185,7 @@ avgs
 ```
 
 ```{r}
-line_df <- stop_delays %>% filter(route_id == 2 & trip_id == 12)
+line_df <- stop_delays %>% filter(route_id == 2 & trip_id == 12) 
 ggplot(line_df, aes(as.character(stopSequence), delay)) +
   geom_point(alpha = 0.2) +
   labs(title="Rozkład spóźnienia linii tramwajowej nr 2 na kolejnych przystankach", y="Opóźnienie", x = "Przystanek") +
@@ -199,6 +199,7 @@ ggplot(line_df, aes(as.character(stopSequence), delay)) +
 ```
 
 ```{r}
+line_df <- stop_delays %>% filter(route_id == 2 & trip_id == 11) %>% filter(stopSequence != max(stopSequence))
 avgDelay <- line_df %>%
   group_by(stopSequence, floor(as.integer(theoretical_time))) %>%
   mutate(avg_delay = mean(delay)) %>% ungroup() %>%
@@ -209,7 +210,7 @@ ggplot(avgDelay, aes(as.integer(theoretical_time), stopName)) +
     labels = paste(as.character(unique(as.integer(avgDelay$theoretical_time))), "00", sep=":"),
     breaks = unique(as.integer(avgDelay$theoretical_time)),
   ) +
-  labs(title="Średnie opóźnienie linii 2 na przestrzeni dnia", x="Godzina", y="Przystanek", fill="Opóźnienie") +
+  labs(title="Średnie opóźnienie linii 2 na przestrzeni dnia", x="Godzina", y="Przystanek", fill="Średnie\nopóźnienie") +
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust=0.5)) +
   geom_tile(aes(fill = avg_delay), colour = "white") +
   scale_fill_gradient(low = "white", high = "steelblue")
