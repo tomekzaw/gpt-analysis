@@ -15,7 +15,16 @@ devtools::install_github('cttobin/ggthemr')
 ```
 
 ```{sql}
-SELECT trip, stop_id, trip_id, vehicle_id, theoretical_time, route_id, (SELECT delay_in_seconds FROM matdel as sub WHERE sub.trip = matdel.trip AND sub.stop_id = matdel.stop_id ORDER BY last_update DESC LIMIT 1) as delay, DATE(last_update) as day FROM matdel GROUP BY trip, stop_id, trip_id, vehicle_id, theoretical_time, route_id, DATE(last_update);
+SELECT trip, stop_id, trip_id, vehicle_id, theoretical_time, route_id, (
+  SELECT delay_in_seconds
+  FROM matdel as sub
+  WHERE sub.trip = matdel.trip
+  AND sub.stop_id = matdel.stop_id
+  ORDER BY last_update DESC
+  LIMIT 1
+) as delay, DATE(last_update) as day
+FROM matdel
+GROUP BY trip, stop_id, trip_id, vehicle_id, theoretical_time, route_id, DATE(last_update);
 ```
 
 ```{r}
