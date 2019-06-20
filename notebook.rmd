@@ -9,27 +9,26 @@ install.packages("dplyr")
 install.packages("rjson")
 install.packages("devtools")
 install.packages("ggplot2")
+install.packages("devtools")
+library(devtools)
+devtools::install_github('cttobin/ggthemr')
+```
+
+```{sql}
+SELECT trip, stop_id, trip_id, vehicle_id, theoretical_time, route_id, (SELECT delay_in_seconds FROM matdel as sub WHERE sub.trip = matdel.trip AND sub.stop_id = matdel.stop_id ORDER BY last_update DESC LIMIT 1) as delay, DATE(last_update) as day FROM matdel GROUP BY trip, stop_id, trip_id, vehicle_id, theoretical_time, route_id, DATE(last_update);
 ```
 
 ```{r}
 library(dplyr)
+library(ggplot2)
+library(ggthemr)
+ggthemr('flat', layout = 'scientific')
 Sys.setenv(LANG = "pl")
 Sys.setlocale('LC_TIME','pl_PL.UTF-8')
 ```
 
 ```{r}
-library(devtools)
-devtools::install_github('cttobin/ggthemr')
-```
-
-```{r}
-library(ggplot2)
-#library(ggthemr)
-#ggthemr('flat', layout = 'scientific')
-```
-
-```{r}
-delays_csv <- read.csv('csv/norm3.csv')
+delays_csv <- read.csv('csv/norm.csv')
 delays <- delays_csv %>%
   transform(delays_csv,
     delay = delay/60,
@@ -59,6 +58,7 @@ routes <- lapply(routes, function(x) {
 })
 routes <- data.frame(do.call("rbind", routes))
 ```
+
 ```{r}
 stops_in_trip <- fromJSON(file='csv/stopsintrips.json')
 stops_in_trip <- stops_in_trip[['2019-06-20']][['stopsInTrip']]
