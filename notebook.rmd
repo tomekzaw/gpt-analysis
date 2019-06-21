@@ -92,6 +92,7 @@ ggplot(df, aes(x=delay, y=..density..)) +
   geom_histogram(binwidth=1) +
   labs(title="Opóźnienia przyjazdów", x="Czas [min]", y=element_blank()) +
   scale_y_continuous(labels=scales::percent, limits=c(0, 0.25))
+ggsave('img/1.png', dpi=300)
 ```
 
 ```{r} 
@@ -104,6 +105,7 @@ ggplot(df, aes(x=weekday, y=delay, group=weekday)) +
     breaks=1:7,
     labels=c("poniedziałek", "wtorek", "środa", "czwartek", "piątek", "sobota", "niedziela")
   )
+ggsave('img/2.png', dpi=300)
 ```
 
 ```{r}
@@ -115,6 +117,7 @@ ggplot(df, aes(x=weekday, y=n)) +
     breaks=1:7,
     labels=c("poniedziałek", "wtorek", "środa", "czwartek", "piątek", "sobota", "niedziela")
   )
+ggsave('img/3.png', dpi=300)
 ```
 
 
@@ -127,6 +130,7 @@ ggplot(delays %>% filter(!weekday %in% c(6,7)), aes(x=theoretical_time)) +
     breaks=breaks,
     labels=paste(breaks, "00", sep=":")
   )
+ggsave('img/4.png', dpi=300)
 ```
 
 ```{r}
@@ -138,6 +142,7 @@ ggplot(delays %>% filter(weekday %in% c(6,7)), aes(x=theoretical_time)) +
     breaks=breaks,
     labels=paste(breaks, "00", sep=":")
   )
+ggsave('img/5.png', dpi=300)
 ```
 
 ```{r}
@@ -149,6 +154,7 @@ ggplot(delays, aes(x = theoretical_time, y = delay)) +
     breaks=ticks,
     labels=paste(ticks, "00", sep=":")
   )
+ggsave('img/6.png', dpi=300)
 ```
 
 ```{r}
@@ -162,6 +168,7 @@ ggplot(delays, aes(x = theoretical_time, y = delay)) +
     labels=paste(ticks, "00", sep=":")
   ) +
   coord_cartesian(ylim=c(0, 6))
+ggsave('img/7.png', dpi=300)
 ```
 
 ```{r}
@@ -173,6 +180,7 @@ ggplot(delays, aes(x=theoretical_time, y=delay)) +
     breaks=ticks,
     labels=paste(ticks, "00", sep=":")
   )
+ggsave('img/8.png', dpi=300)
 ```
 
 ```{r}
@@ -196,6 +204,7 @@ ggplot(line_df, aes(as.character(stopSequence), delay)) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust=0.5, margin = margin(0, 0, 0, -1))) +
   
   coord_cartesian(ylim = c(-10:30))
+ggsave('img/9.png', dpi=300)
 ```
 
 ```{r fig.asp = 1.1}
@@ -214,6 +223,7 @@ ggplot(avgDelay, aes(as.integer(theoretical_time), stopName)) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
   geom_tile(aes(fill = avg_delay), colour = "white") +
   scale_fill_gradient(low = "white", high = "steelblue")
+ggsave('img/10.png', dpi=300)
 ```
 
 Henio o 12 pije kawę.
