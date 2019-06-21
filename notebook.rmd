@@ -78,7 +78,10 @@ stops_in_trip <- lapply(stops_in_trip, function(x) {
 stops_in_trip <- data.frame(do.call("rbind", stops_in_trip))
 stop_delays <- merge(x=delays, y=stops_in_trip, by.x=c("trip_id", "route_id", "stop_id"), by.y=c("tripId", "routeId", "stopId"))
 stop_delays <- merge(stop_delays, stops, by.x="stop_id", by.y="stopId")
-stop_delays$stopSequence = as.numeric(as.character(stop_delays$stopSequence))
+stop_delays <- stop_delays %>% mutate (
+  stopSequence = as.numeric(as.character(stopSequence)),
+  nextStopSequence = stopSequence + 1
+)
 stop_delays$stopName = factor(stop_delays$stopName, levels=levels(reorder(stop_delays$stopName, stop_delays$stopSequence)))
 ```
 
@@ -227,3 +230,20 @@ ggsave('img/10.png', dpi=300)
 ```
 
 Henio o 12 pije kawę.
+
+```{r fig.asp = 0.6}
+delay_diff <- merge(stop_delays, stop_delays, by.x = c("trip_id", "trip", "route_id", "stopSequence"), by.y = c("trip_id", "trip", "route_id", "nextStopSequence")) %>% filter(nextStopSequence < 25 &  trip_id == 12 & route_id == 2)
+delay_diff <- delay_diff %>% transform (diff = delay.y - delay.x) %>%
+  arrange(stopSequence)
+
+ggplot(delay_diff, aes(x = stopSequence, y = diff)) +
+  stat_summary(fun.y="mean") +
+    scale_x_discrete(
+    limits = line_df %>% distinct(stopSequence) %>% filter(stopSequence != 0) %>% arrange(stopSequence) %>% `$`(stopSequence) %>% as.character,
+    labels = line_df %>% distinct(stopSequence, stopName) %>% filter(stopSequence != 0) %>% arrange(stopSequence) %>% `$`(stopName)
+  ) + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
+ geom_smooth() +
+  labs(title="Średnia zmiana opóźnienia między przystankami na linii 2", x="Przystanek na trasie", y="Średnia zmiana [min]")
+```
+
