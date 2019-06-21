@@ -198,7 +198,7 @@ ggplot(line_df, aes(as.character(stopSequence), delay)) +
   coord_cartesian(ylim = c(-10:30))
 ```
 
-```{r}
+```{r fig.asp = 1.1}
 line_df <- stop_delays %>% filter(route_id == 2 & trip_id == 11) %>% filter(stopSequence != max(stopSequence))
 avgDelay <- line_df %>%
   group_by(stopSequence, floor(as.integer(theoretical_time))) %>%
