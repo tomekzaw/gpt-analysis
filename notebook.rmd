@@ -1,5 +1,5 @@
 ---
-title: "R Notebook"
+title: "Analiza realizacji rozkładów jazdy pojazdów szynowych, spalinowych i elektrycznych aglomeracji trójmiejskiej"
 authors: Maciej Mionskowski, Tomasz Zawadzki
 output: html_notebook
 ---
@@ -165,13 +165,13 @@ ggplot(delays, aes(x = theoretical_time, y = delay)) +
 ```
 
 ```{r}
-breaks <- 0:24
+ticks <- 0:12*2
 ggplot(delays, aes(x=theoretical_time, y=delay)) +
   stat_summary(fun.y="mean", geom="bar") +
   labs(title="Rozkład kursów według godziny", x="Godzina", y="Liczba kursów") +
   scale_x_continuous(
-    breaks=breaks,
-    labels=paste(breaks, "00", sep=":")
+    breaks=ticks,
+    labels=paste(ticks, "00", sep=":")
   )
 ```
 
@@ -188,7 +188,7 @@ avgs
 line_df <- stop_delays %>% filter(route_id == 2 & trip_id == 12) 
 ggplot(line_df, aes(as.character(stopSequence), delay)) +
   geom_point(alpha = 0.2) +
-  labs(title="Rozkład spóźnienia linii tramwajowej nr 2 na kolejnych przystankach", y="Opóźnienie", x = "Przystanek") +
+  labs(title="Rozkład spóźnienia linii tramwajowej 2 na kolejnych przystankach", y="Opóźnienie", x = "Przystanek") +
   scale_x_discrete(
     limits = line_df %>% distinct(stopSequence) %>% arrange(stopSequence) %>% `$`(stopSequence) %>% as.character,
     labels = line_df %>% distinct(stopSequence, stopName) %>% arrange(stopSequence) %>% `$`(stopName)
@@ -211,15 +211,9 @@ ggplot(avgDelay, aes(as.integer(theoretical_time), stopName)) +
     breaks = unique(as.integer(avgDelay$theoretical_time)),
   ) +
   labs(title="Średnie opóźnienie linii 2 na przestrzeni dnia", x="Godzina", y="Przystanek", fill="Średnie\nopóźnienie") +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust=0.5)) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
   geom_tile(aes(fill = avg_delay), colour = "white") +
   scale_fill_gradient(low = "white", high = "steelblue")
 ```
 
 Henio o 12 pije kawę.
-
-```{r}
-ggplot(delays %>% filter(delay >= -5 & delay <= 10 & route_id == 2), aes(x=stop_id, y=delay) ) +
-  stat_density_2d(aes(fill = ..density..), geom = "raster", contour = FALSE)
-delays
-```
