@@ -1,6 +1,6 @@
 # Analiza realizacji rozkładów jazdy pojazdów szynowych, spalinowych i elektrycznych aglomeracji trójmiejskiej
 
-[R Notebook](../blob/master/notebook.rmd)
+[R Notebook](../master/notebook.rmd)
 
 [Pobieranie danych z API](https://github.com/maciekmm/gpt)
 
